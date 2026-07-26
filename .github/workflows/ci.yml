@@ -32,3 +32,60 @@ jobs:
           python-version: "3.13"
       - run: pip install -e .
       - run: readme-lies --strict --format github
+
+  action:
+    # Exercise action.yml the way a consumer does - `uses: ./` - not by calling
+    # the CLI directly. Every bug found in the action so far was invisible to a
+    # CLI-only test, because composite steps run under `set -eo pipefail` and
+    # inputs arrive through a different path.
+    name: Action (as a consumer uses it)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Happy path, all optional inputs left at their defaults. This is the
+      # combination that was broken: a false `strict` failed the step.
+      - name: Defaults only
+        uses: ./
+
+      # Every input supplied.
+      - name: All inputs
+        uses: ./
+        with:
+          path: "."
+          strict: "true"
+          glob: |
+            README.md
+          ignore: |
+            missing-path
+
+      - name: Build a repo that lies
+        run: |
+          mkdir -p /tmp/liar
+          echo '{"scripts":{"build":"vite build"}}' > /tmp/liar/package.json
+          cat > /tmp/liar/README.md <<'MARKDOWN'
+          # Liar
+
+          Run it with:
+
+          ~~~bash
+          npm run dev
+          ~~~
+          MARKDOWN
+          sed -i 's/^          //' /tmp/liar/README.md
+          cat /tmp/liar/README.md
+
+      - name: Must fail on a lying repo
+        id: liar
+        uses: ./
+        continue-on-error: true
+        with:
+          path: /tmp/liar
+
+      - name: Assert it failed
+        run: |
+          if [ "${{ steps.liar.outcome }}" != "failure" ]; then
+            echo "::error::the action passed a README documenting a script that does not exist"
+            exit 1
+          fi
+          echo "Correctly failed on a lying README."
