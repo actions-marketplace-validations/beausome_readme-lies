@@ -86,13 +86,39 @@ Exit codes: `0` clean, `1` findings, `2` usage error.
 
 ## In CI
 
+Published on the [GitHub Marketplace](https://github.com/marketplace/actions/readme-lies):
+
+```yaml
+- name: Check the docs still tell the truth
+  uses: beausome/readme-lies@v1
+```
+
+`v1` is a moving tag that follows the latest `v1.x` release, so you get fixes
+without editing your workflow. Pin to an exact release (`@v0.1.0`) if you would
+rather freeze it.
+
+Inputs, all optional:
+
+```yaml
+- uses: beausome/readme-lies@v1
+  with:
+    path: .                 # repository root
+    strict: "true"          # fail on warnings too
+    glob: |                 # one pattern per line
+      docs/**/*.md
+    ignore: |               # one finding code per line
+      missing-path
+```
+
+Or run the CLI directly, if you would rather not depend on an Action:
+
 ```yaml
 - name: Check the docs still tell the truth
   run: pipx run readme-lies --format github
 ```
 
-`--format github` emits workflow commands, so findings appear as annotations on
-the exact lines of the pull request.
+Either way, `--format github` emits workflow commands, so findings appear as
+annotations on the exact lines of the pull request.
 
 ## Silencing things
 
