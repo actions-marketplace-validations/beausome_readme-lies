@@ -7,7 +7,7 @@ checks the claims a repository can answer about itself, statically.
 
 from __future__ import annotations
 
-__version__ = "0.1.0"
+__version__ = "0.1.2"
 
 from .core import check, check_document, find_documents
 from .model import Finding, Level

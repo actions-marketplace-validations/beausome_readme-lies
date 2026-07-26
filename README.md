@@ -94,7 +94,7 @@ Published on the [GitHub Marketplace](https://github.com/marketplace/actions/rea
 ```
 
 `v1` is a moving tag that follows the latest `v1.x` release, so you get fixes
-without editing your workflow. Pin to an exact release (`@v0.1.1`) if you would
+without editing your workflow. Pin to an exact release (`@v0.1.2`) if you would
 rather freeze it.
 
 The Marketplace "Use latest version" button generates an exact pin instead —
