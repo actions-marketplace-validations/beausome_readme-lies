@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "readme-lies"
+version = "0.1.0"
+description = "Find claims in your docs that are no longer true — broken commands, dead paths, license drift."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+keywords = ["documentation", "linter", "readme", "markdown", "ci", "docs-rot"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Documentation",
+  "Topic :: Software Development :: Quality Assurance",
+]
+# No runtime dependencies, on purpose: a CI linter should not drag a tree of
+# packages (or their CVEs) into every repository that adopts it.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+readme-lies = "readme_lies.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kaushal-sah444/readme-lies"
+Issues = "https://github.com/kaushal-sah444/readme-lies/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/readme_lies"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -1,0 +1,39 @@
+name: readme-lies
+description: Find claims in your docs that are no longer true - broken commands, dead paths, license drift.
+branding:
+  icon: alert-triangle
+  color: yellow
+
+inputs:
+  path:
+    description: Repository root to check.
+    required: false
+    default: "."
+  glob:
+    description: Document glob. Repeat with newlines for several.
+    required: false
+    default: ""
+  ignore:
+    description: Finding codes to suppress, newline separated.
+    required: false
+    default: ""
+  strict:
+    description: Fail on warnings as well as errors.
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: |
+        python -m pip install --quiet "${{ github.action_path }}"
+        args=("${{ inputs.path }}" --format github)
+        [ "${{ inputs.strict }}" = "true" ] && args+=(--strict)
+        while IFS= read -r pattern; do
+          [ -n "$pattern" ] && args+=(--glob "$pattern")
+        done <<< "${{ inputs.glob }}"
+        while IFS= read -r code; do
+          [ -n "$code" ] && args+=(--ignore "$code")
+        done <<< "${{ inputs.ignore }}"
+        readme-lies "${args[@]}"
